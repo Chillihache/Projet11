@@ -5,4 +5,5 @@ lib
 tests/
 .envrc
 env/
+.idea/
 __pycache__
