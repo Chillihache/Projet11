@@ -53,12 +53,18 @@ def find_club(form_data):
     return club
 
 
-def reduce_places_in_competition(competition, form_data):
-    competition["numberOfPlaces"] = int(competition["numberOfPlaces"]) - int(form_data["places"])
+def validate_booking_conditions(places):
+    if places > 12:
+        return False
+    return True
 
 
-def reduce_club_points(club, form_data):
-    club["points"] = int(club["points"]) - int(form_data["places"])
+def reduce_places_in_competition(competition, places):
+    competition["numberOfPlaces"] = int(competition["numberOfPlaces"]) - places
+
+
+def reduce_club_points(club, places):
+    club["points"] = int(club["points"]) - places
 
 
 @app.route('/purchasePlaces', methods=['POST'])
@@ -67,10 +73,16 @@ def purchase_places():
 
     competition = find_competition(form_data)
     club = find_club(form_data)
-    reduce_places_in_competition(competition, form_data)
-    reduce_club_points(club, form_data)
+    places_required = int(form_data["places"])
+    print(places_required)
 
-    flash('Great-booking complete!')
+    if validate_booking_conditions(places_required):
+        reduce_places_in_competition(competition, places_required)
+        reduce_club_points(club, places_required)
+        flash('Great-booking complete!')
+
+    else:
+        flash('You are not allowed to book more than 12 places.')
     return render_template('welcome.html', club=club, competitions=competitions)
 
 

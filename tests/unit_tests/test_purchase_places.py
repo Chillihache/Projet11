@@ -36,6 +36,11 @@ def test_find_clubs():
     assert server.find_club(form_data) == expected_result
 
 
+def test_validate_booking_conditions():
+    assert server.validate_booking_conditions(5)
+    assert not server.validate_booking_conditions(13)
+
+
 def test_reduce_places_in_competition():
 
     competition = {
@@ -44,8 +49,8 @@ def test_reduce_places_in_competition():
         "numberOfPlaces": "13"
     }
     
-    form_data = {"places": 10}
-    server.reduce_places_in_competition(competition, form_data)
+    places = 10
+    server.reduce_places_in_competition(competition, 10)
     expected_places_left = 3
 
     assert competition["numberOfPlaces"] == expected_places_left
@@ -59,8 +64,8 @@ def test_reduce_club_points():
         "points": "4"
     }
 
-    form_data = {"places": 3}
-    server.reduce_club_points(club, form_data)
+    places = 3
+    server.reduce_club_points(club, places)
     expected_points_left = 1
 
     assert club["points"] == expected_points_left
