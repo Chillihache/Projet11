@@ -34,27 +34,29 @@ def show_summary():
 
 @app.route('/book/<competition>/<club>')
 def book(competition, club):
-    found_club = [c for c in clubs if c['name'] == club][0]
-    found_competition = [c for c in competitions if c['name'] == competition][0]
+    found_club = find_club(club)
+    found_competition = find_competition(competition)
     if found_club and found_competition:
-        return render_template('booking.html', club=found_club, competition=found_competition)
+        max_places = min(12, int(found_club["points"]), int(found_competition["numberOfPlaces"]))
+        return render_template('booking.html', club=found_club, competition=found_competition,
+                               max_places=max_places)
     else:
         flash("Something went wrong-please try again")
         return render_template('welcome.html', club=club, competitions=competitions)
 
 
-def find_competition(form_data):
-    competition = [c for c in competitions if c["name"] == form_data["competition"]][0]
-    return competition
+def find_competition(competition):
+    found_competition = [c for c in competitions if c["name"] == competition][0]
+    return found_competition
 
 
-def find_club(form_data):
-    club = [c for c in clubs if c["name"] == form_data["club"]][0]
-    return club
+def find_club(club):
+    found_club = [c for c in clubs if c["name"] == club][0]
+    return found_club
 
 
-def validate_booking_conditions(places):
-    if places > 12:
+def validate_booking_conditions(club, competition, places):
+    if places > 12 or places > int(club["points"]) or places > int(competition["numberOfPlaces"]):
         return False
     return True
 
@@ -71,18 +73,17 @@ def reduce_club_points(club, places):
 def purchase_places():
     form_data = request.form
 
-    competition = find_competition(form_data)
-    club = find_club(form_data)
+    competition = find_competition(form_data["competition"])
+    club = find_club(form_data["club"])
     places_required = int(form_data["places"])
-    print(places_required)
 
-    if validate_booking_conditions(places_required):
+    if validate_booking_conditions(club, competition, places_required):
         reduce_places_in_competition(competition, places_required)
         reduce_club_points(club, places_required)
         flash('Great-booking complete!')
 
     else:
-        flash('You are not allowed to book more than 12 places.')
+        flash("Something went wrong-please try again")
     return render_template('welcome.html', club=club, competitions=competitions)
 
 
