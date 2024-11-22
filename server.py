@@ -43,12 +43,33 @@ def book(competition, club):
         return render_template('welcome.html', club=club, competitions=competitions)
 
 
+def find_competition(form_data):
+    competition = [c for c in competitions if c["name"] == form_data["competition"]][0]
+    return competition
+
+
+def find_club(form_data):
+    club = [c for c in clubs if c["name"] == form_data["club"]][0]
+    return club
+
+
+def reduce_places_in_competition(competition, form_data):
+    competition["numberOfPlaces"] = int(competition["numberOfPlaces"]) - int(form_data["places"])
+
+
+def reduce_club_points(club, form_data):
+    club["points"] = int(club["points"]) - int(form_data["places"])
+
+
 @app.route('/purchasePlaces', methods=['POST'])
 def purchase_places():
-    competition = [c for c in competitions if c['name'] == request.form['competition']][0]
-    club = [c for c in clubs if c['name'] == request.form['club']][0]
-    places_required = int(request.form['places'])
-    competition['numberOfPlaces'] = int(competition['numberOfPlaces']) - places_required
+    form_data = request.form
+
+    competition = find_competition(form_data)
+    club = find_club(form_data)
+    reduce_places_in_competition(competition, form_data)
+    reduce_club_points(club, form_data)
+
     flash('Great-booking complete!')
     return render_template('welcome.html', club=club, competitions=competitions)
 
