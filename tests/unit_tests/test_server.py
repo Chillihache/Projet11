@@ -17,8 +17,9 @@ def test_find_competitions():
     competition = "Fall Classic"
     expected_result = {
         "name": "Fall Classic",
-        "date": "2020-10-22 13:30:00",
-        "numberOfPlaces": "13"
+        "date": "2025-10-22 13:30:00",
+        "numberOfPlaces": "13",
+        "past": False
     }
 
     assert server.find_competition(competition) == expected_result
@@ -40,7 +41,7 @@ def test_validate_booking_conditions():
 
     competition = {
         "name": "Fall Classic",
-        "date": "2020-10-22 13:30:00",
+        "date": "2025-10-22 13:30:00",
         "numberOfPlaces": "13"
     }
 
