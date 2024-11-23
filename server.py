@@ -44,6 +44,16 @@ def show_summary():
     return render_template('welcome.html', club=club, competitions=competitions)
 
 
+def find_club(club):
+    found_club = [c for c in clubs if c["name"] == club][0]
+    return found_club
+
+
+def find_competition(competition):
+    found_competition = [c for c in competitions if c["name"] == competition][0]
+    return found_competition
+
+
 @app.route('/book/<competition>/<club>')
 def book(competition, club):
     found_club = find_club(club)
@@ -55,16 +65,6 @@ def book(competition, club):
     else:
         flash("Something went wrong-please try again")
         return render_template('welcome.html', club=club, competitions=competitions)
-
-
-def find_competition(competition):
-    found_competition = [c for c in competitions if c["name"] == competition][0]
-    return found_competition
-
-
-def find_club(club):
-    found_club = [c for c in clubs if c["name"] == club][0]
-    return found_club
 
 
 def validate_booking_conditions(club, competition, places):

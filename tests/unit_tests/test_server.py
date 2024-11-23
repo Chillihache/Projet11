@@ -1,5 +1,6 @@
 import json
 import pytest
+from io import StringIO
 
 import server
 
@@ -10,6 +11,45 @@ def client():
     server.app.config['SECRET_KEY'] = 'something_special'
     with server.app.test_client() as client:
         yield client
+
+
+def test_load_clubs(monkeypatch):
+    mock_data = '{"clubs":[{"name":"Simply Lift", "email":"john@simplylift.co", "points":"13"}]}'
+
+    mock_file = StringIO(mock_data)
+
+    def mock_open(*args, **kwargs):
+        return mock_file
+
+    monkeypatch.setattr("builtins.open", mock_open)
+
+    clubs = server.load_clubs()
+    assert len(clubs) == 1
+    assert clubs[0]["email"] == "john@simplylift.co"
+
+
+def test_load_competitions(monkeypatch):
+    mock_data = '{"competitions": [{"name": "Spring Festival", "date": "2020-03-27 10:00:00", "numberOfPlaces": "25"},'\
+                '{"name": "Fall Classic", "date": "2025-10-22 13:30:00", "numberOfPlaces": "13"}]}'
+
+    mock_file = StringIO(mock_data)
+
+    def mock_open(*args, **kwargs):
+        return mock_file
+
+    monkeypatch.setattr("builtins.open", mock_open)
+
+    competitions = server.load_competitions()
+    assert len(competitions) == 2
+    assert competitions[0]["name"] == "Spring Festival"
+    assert competitions[0]["past"]
+    assert not competitions[1]["past"]
+
+
+def test_index(client):
+    response = client.get("/")
+    assert response.status_code == 200
+    assert b"<title>GUDLFT Registration</title>" in response.data
 
 
 def test_show_summary(client):
@@ -30,7 +70,25 @@ def test_show_summary_email_not_found(client):
     assert b"No account found" in response.data
 
 
-def test_find_competitions():
+def test_find_club():
+
+    club = "Iron Temple"
+    expected_result = {
+        "name": "Iron Temple",
+        "email": "admin@irontemple.com",
+        "points": "4"
+    }
+
+    assert server.find_club(club) == expected_result
+
+
+def test_find_invalid_club():
+    club = "Invalid club"
+    with pytest.raises(IndexError):
+        server.find_club(club)
+
+
+def test_find_competition():
 
     competition = "Fall Classic"
     expected_result = {
@@ -43,16 +101,15 @@ def test_find_competitions():
     assert server.find_competition(competition) == expected_result
 
 
-def test_find_clubs():
+def test_find_invalid_competition():
+    competition = "Invalid competition"
+    with pytest.raises(IndexError):
+        server.find_competition(competition)
 
-    club = "Iron Temple"
-    expected_result = {
-        "name": "Iron Temple",
-        "email": "admin@irontemple.com",
-        "points": "4"
-    }
 
-    assert server.find_club(club) == expected_result
+def test_book(client):
+    response = client.get("book/Spring%20Festival/Iron%20Temple")
+    assert response.status_code == 200
 
 
 def test_validate_booking_conditions():
@@ -113,27 +170,13 @@ def test_purchase_places(client):
 
 
 def test_purchase_places_with_invalid_data(client):
-
     invalid_data = "invalid data"
-
     response = client.post("/purchasePlaces", data=invalid_data)
 
     assert response.status_code == 400
 
 
-def test_book(client):
-    response = client.get("book/Spring%20Festival/Iron%20Temple")
-
+def logout(client):
+    response = client.get("/logout")
     assert response.status_code == 200
-
-
-
-
-
-
-
-
-
-
-
-
+    assert b"<title>GUDLFT Registration</title>" in response.data
