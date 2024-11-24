@@ -1,5 +1,5 @@
 import json
-from flask import Flask, render_template, request, redirect, flash, url_for
+from flask import Flask, render_template, request, redirect, flash, url_for, session
 from datetime import datetime
 
 
@@ -38,6 +38,7 @@ def index():
 def show_summary():
     try:
         club = [club for club in clubs if club['email'] == request.form['email']][0]
+        session["name"] = club["name"]
     except IndexError:
         flash("No account found")
         return render_template("index.html")
@@ -102,8 +103,19 @@ def purchase_places():
     return render_template('welcome.html', club=club, competitions=competitions)
 
 
-# TODO: Add route for points display
+@app.route('/clubs')
+def clubs_points_board():
+    return render_template('clubs_board.html', clubs=clubs)
+
+
+@app.route('/backHome')
+def back_home():
+    if session.get("name"):
+        club = find_club(session.get("name"))
+        return render_template('welcome.html', club=club, competitions=competitions)
+
 
 @app.route('/logout')
 def logout():
+    session.pop('name', None)
     return redirect(url_for('index'))

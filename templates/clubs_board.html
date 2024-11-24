@@ -1,0 +1,26 @@
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Clubs Board || GUDLFT</title>
+    </head>
+    <body>
+        <h1>Clubs board</h1>
+        {% if session.get('name') %}
+            <a href="{{ url_for('logout') }}">Logout</a>
+            <a href="{{ url_for('back_home') }}">Home</a>
+        {% else %}
+            <a href="{{ url_for('index') }}">login</a>
+        {% endif %}
+        <h2>Competitions:</h2>
+            <ul>
+                {% for club in clubs %}
+                    <li>
+                        {{ club['name'] }}<br>
+                        Points : {{ club['points'] }}
+                    </li>
+                    <hr/>
+                {% endfor %}
+            </ul>
+    </body>
+</html>
