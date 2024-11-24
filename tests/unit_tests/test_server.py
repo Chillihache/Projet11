@@ -176,7 +176,7 @@ def test_purchase_places_with_invalid_data(client):
     assert response.status_code == 400
 
 
-def logout(client):
-    response = client.get("/logout")
+def test_logout(client):
+    response = client.get("/logout", follow_redirects=True)
     assert response.status_code == 200
     assert b"<title>GUDLFT Registration</title>" in response.data

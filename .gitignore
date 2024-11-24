@@ -5,4 +5,6 @@ lib
 .envrc
 env/
 .idea/
+.coverage
+.coveragerc
 __pycache__
