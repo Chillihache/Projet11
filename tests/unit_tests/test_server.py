@@ -1,6 +1,6 @@
-import json
 import pytest
 from io import StringIO
+from flask import session
 
 import server
 
@@ -174,6 +174,16 @@ def test_purchase_places_with_invalid_data(client):
     response = client.post("/purchasePlaces", data=invalid_data)
 
     assert response.status_code == 400
+
+
+def test_clubs_points_board(client):
+    with client.session_transaction() as session:
+        session["name"] = "Iron Temple"
+
+    response = client.get("/clubs")
+
+    assert response.status_code == 200
+    assert b"<title>Clubs Board || GUDLFT</title>" in response.data
 
 
 def logout(client):
