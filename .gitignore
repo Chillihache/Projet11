@@ -6,6 +6,4 @@ lib
 env/
 .idea/
 .coverage
-.coveragerc
 __pycache__
-tests/performance_tests/
