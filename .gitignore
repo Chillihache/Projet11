@@ -7,3 +7,4 @@ env/
 .idea/
 .coverage
 __pycache__
+htmlcov/
