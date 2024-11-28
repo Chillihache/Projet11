@@ -44,8 +44,32 @@
 
 5. Testing
 
-    You are free to use whatever testing framework you like-the main thing is that you can show what tests you are using.
+Pytest :
 
-    We also like to show how well we're testing, so there's a module called 
-    [coverage](https://coverage.readthedocs.io/en/coverage-5.1/) you should add to your project.
+To temporarily add a directory to the PYTHONPATH, use the following commands on windows :
+
+    set PYTHONPATH=%PYTHONPATH%;<path_to_your_directory>
+
+Then, start every tests with :
+
+    pytest
+
+To see the coverage :
+
+    pytest --cov
+
+Locust :
+
+To start Locust :
+
+    locust -f tests/performance_tests/locustfile.py
+
+Make sure to start your app server.
+
+Then click here to open in you browser : http://localhost:8089/
+
+You can choose the number of users, the ramp up and the host (http://localhost:5000/)
+
+
+    
 
