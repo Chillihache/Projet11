@@ -66,9 +66,9 @@ To start Locust :
 
 Make sure to start your app server.
 
-Then click here to open in you browser : http://localhost:8089/
+Then click here to open in you browser : http://127.0.0.1:8089/
 
-You can choose the number of users, the ramp up and the host (http://localhost:5000/)
+You can choose the number of users, the ramp up and the host http://127.0.0.1:5000/ (don't use http://localhost:5000/)
 
 
     
